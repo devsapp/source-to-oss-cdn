@@ -1,0 +1,92 @@
+Edition: 3.0.0
+Type: Project
+Name: source-to-oss-cdn
+Version: 0.0.1
+Provider:
+  - 阿里云
+Description: 定时抓取 URL 并同步到 OSS 同时刷新 CDN 缓存
+HomePage: https://github.com/devsapp/source-to-oss-cdn
+Tags:
+  - CDN
+  - Python
+  - OSS
+Category: Web框架
+Organization: 阿里云函数计算（FC）
+Effective: Public
+Parameters:
+  type: object
+  additionalProperties: false
+  required:
+    - region
+    - roleArn
+    - sourceUrls
+    - targetDomain
+    - cdnDomain
+    - cronExpression
+  properties:
+    region:
+      title: 地域
+      type: string
+      default: cn-hangzhou
+      description: 创建应用所在的地区，建议和 OSS Bucket 部署在同一地区
+      enum:
+        - cn-beijing
+        - cn-hangzhou
+        - cn-shanghai
+        - cn-qingdao
+        - cn-zhangjiakou
+        - cn-huhehaote
+        - cn-shenzhen
+        - cn-chengdu
+        - cn-hongkong
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-7
+        - ap-northeast-1
+        - ap-northeast-2
+        - eu-central-1
+        - eu-west-1
+        - us-west-1
+        - us-east-1
+        - ap-south-1
+    roleArn:
+      title: 函数角色
+      type: string
+      default: ''
+      description: 函数执行时所扮演的角色，不指定则默认使用fcdefaultrole
+      x-role:
+        type: object
+        name: sourcetoosscdnrole
+        pattern: '^acs:ram::[0-9]*:role/.*$'
+        service: fc
+        description: 应用所属的函数所配置的 role，我们会用此角色生成临时密钥来访问 OSS 和 CDN。
+        authorities:
+          - AliyunOSSFullAccess
+          - AliyunCDNFullAccess
+    functionName:
+      title: 函数名
+      type: string
+      default: source-to-oss-cdn
+      description: 应用的函数名称
+    sourceUrls:
+      title: 源 URL
+      type: string
+      description: '指定您要抓取的地址，多个地址用逗号分隔，例如: http://yoursite.com/abc.zip'
+    targetDomain:
+      title: OSS Bucket 域名
+      type: string
+      default: ''
+      description: 'OSS Bucket 域名，如果函数和 Bucket 在相同地域建议使用内网域名，例如: mybucket.oss-cn-hangzhou-internal.aliyuncs.com'
+    cdnDomain:
+      title: CDN 域名
+      type: string
+      description: '回源到 OSS 的 CDN 域名，例如: yourcdndomain.com'
+      default: ''
+    cronExpression:
+      title: 定时触发时间
+      type: string
+      default: '@every 60m'
+      description: 指定定时触发时间，示例值为每 60 分钟触发一次
+
